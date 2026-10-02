@@ -10,6 +10,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 
+import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -23,7 +24,8 @@ public class FileDownloadTest {
     static void setUp() throws IOException {
         Configuration.browser = "chrome";
         Configuration.downloadsFolder = DOWNLOAD_DIR.toString();
-        Configuration.timeout = 150000;
+        Configuration.timeout = 170000;
+        Configuration.pageLoadStrategy = "eager";
 
         Files.createDirectories(DOWNLOAD_DIR);
     }
@@ -51,8 +53,14 @@ public class FileDownloadTest {
         $("input[type='file']")
                 .uploadFile(originalFile.toFile());
 
-        // Находим элемент кнопки для скачивания
-        SelenideElement downloadButton = $("a[/download]");
+        // Кликнуть по кнопке "Перейти к скачиванию"
+        $$("a, button")
+                .filterBy(text("Перейти к Скачиванию"))
+                .first()
+                .click();
+
+        // Находим элемент кнопки "Скачать изображение" для скачивания
+        SelenideElement downloadButton = $("a[/get-image/slnkzkonyuzyxvwdp]");
         downloadButton.shouldBe(visible);
 
         // Кликаем по кнопке для скачивания и сохраняем файл
